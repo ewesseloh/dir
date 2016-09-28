@@ -90,6 +90,7 @@ class Dir extends \FilterIterator
         if (!file_exists($path)) {
             throw new Exception("Unexisting path `{$path}`.");
         }
+        $path = static::normalizePath($path);
         if (!is_dir($path)) {
             return [$path];
         }
@@ -249,7 +250,7 @@ class Dir extends \FilterIterator
     protected static function _copy($path, $dest, $options)
     {
         $ds = DIRECTORY_SEPARATOR;
-        $root = $options['childsOnly'] ? $path : dirname($path);
+        $root = static::normalizePath($options['childsOnly'] ? $path : dirname($path));
         $dest = rtrim($dest, $ds);
 
         $paths = static::scan($path, $options);
@@ -257,7 +258,7 @@ class Dir extends \FilterIterator
         $copyHandler = $options['copyHandler'];
 
         foreach ($paths as $path) {
-            $target = preg_replace('~^' . $root . '~', '', $path);
+            $target = preg_replace('~^' . preg_quote($root) . '~', '', $path);
             if (is_dir($path)) {
                 mkdir($dest . $ds . ltrim($target, $ds), $options['mode'], true);
             } else {
@@ -407,5 +408,10 @@ class Dir extends \FilterIterator
             }
         }
         return false;
+    }
+
+    protected static function normalizePath($path)
+    {
+        return rtrim(str_replace('\\', '/', $path), '/') . '/';
     }
 }
