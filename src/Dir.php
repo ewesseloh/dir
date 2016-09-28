@@ -168,13 +168,16 @@ class Dir extends \FilterIterator
         }
 
         $isDirEmpty = function($path) {
+            $result = true;
             $handle = opendir($path);
             while (($entry = readdir($handle)) !== false) {
                 if ($entry !== '.' && $entry !== '..') {
-                    return false;
+                    $result = false;
+                    break;
                 }
             }
-            return true;
+            closedir($handle);
+            return $result;
         };
 
         foreach ($paths as $path) {
