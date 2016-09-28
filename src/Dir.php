@@ -257,7 +257,7 @@ class Dir extends \FilterIterator
         $copyHandler = $options['copyHandler'];
 
         foreach ($paths as $path) {
-            $target = preg_replace('~^' . $root . '~', '', $path);
+            $target = preg_replace('~^' . preg_quote($root) . '~', '', $path);
             if (is_dir($path)) {
                 mkdir($dest . $ds . ltrim($target, $ds), $options['mode'], true);
             } else {
